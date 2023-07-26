@@ -1,0 +1,287 @@
+import 'package:address_book/domain/address_model.dart';
+import 'package:address_book/domain/user_model.dart';
+import 'package:address_book/domain/viacep_model.dart';
+import 'package:address_book/features/auth/view/auth/auth_cubit.dart';
+import 'package:address_book/features/auth/view/auth/auth_state.dart';
+import 'package:address_book/features/home/view/blocs/manipulate_address/manipulate_address_cubit.dart';
+import 'package:address_book/features/home/view/blocs/manipulate_address/manipulate_address_state.dart';
+import 'package:address_book/features/home/view/blocs/viacep/viacep_cubit.dart';
+import 'package:address_book/features/home/view/blocs/viacep/viacep_state.dart';
+import 'package:address_book/router.dart';
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+
+class NewAddressScreen extends StatefulWidget {
+  const NewAddressScreen({super.key});
+
+  @override
+  State<NewAddressScreen> createState() => _NewAddressScreenState();
+}
+
+class _NewAddressScreenState extends State<NewAddressScreen> {
+  late final TextEditingController _postalCodeController;
+  late final TextEditingController _streetController;
+  late final TextEditingController _cityController;
+  late final TextEditingController _complementController;
+  late final TextEditingController _neighborhoodController;
+
+  late String estado;
+
+  final _formKey = GlobalKey<FormState>();
+
+  late final UserModel user;
+
+  late final ManipulateAddressCubit manipulateAddressCubit;
+
+  late final ViaCepCubit viaCepCubit;
+
+  late final MaskTextInputFormatter postalCodeMask;
+
+  final estados = [
+    {"nome": "Acre", "sigla": "AC"},
+    {"nome": "Alagoas", "sigla": "AL"},
+    {"nome": "Amapá", "sigla": "AP"},
+    {"nome": "Amazonas", "sigla": "AM"},
+    {"nome": "Bahia", "sigla": "BA"},
+    {"nome": "Ceará", "sigla": "CE"},
+    {"nome": "Distrito Federal", "sigla": "DF"},
+    {"nome": "Espírito Santo", "sigla": "ES"},
+    {"nome": "Goiás", "sigla": "GO"},
+    {"nome": "Maranhão", "sigla": "MA"},
+    {"nome": "Mato Grosso", "sigla": "MT"},
+    {"nome": "Mato Grosso do Sul", "sigla": "MS"},
+    {"nome": "Minas Gerais", "sigla": "MG"},
+    {"nome": "Pará", "sigla": "PA"},
+    {"nome": "Paraíba", "sigla": "PB"},
+    {"nome": "Paraná", "sigla": "PR"},
+    {"nome": "Pernambuco", "sigla": "PE"},
+    {"nome": "Piauí", "sigla": "PI"},
+    {"nome": "Rio de Janeiro", "sigla": "RJ"},
+    {"nome": "Rio Grande do Norte", "sigla": "RN"},
+    {"nome": "Rio Grande do Sul", "sigla": "RS"},
+    {"nome": "Rondônia", "sigla": "RO"},
+    {"nome": "Roraima", "sigla": "RR"},
+    {"nome": "Santa Catarina", "sigla": "SC"},
+    {"nome": "São Paulo", "sigla": "SP"},
+    {"nome": "Sergipe", "sigla": "SE"},
+    {"nome": "Tocantins", "sigla": "TO"}
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    _postalCodeController = TextEditingController();
+    _streetController = TextEditingController();
+    _cityController = TextEditingController();
+    _complementController = TextEditingController();
+    _neighborhoodController = TextEditingController();
+
+    user = (context.read<AuthCubit>().state as Authenticated).user;
+
+    manipulateAddressCubit = ManipulateAddressCubit();
+
+    viaCepCubit = ViaCepCubit();
+
+    estado = estados.first['sigla']!;
+
+    postalCodeMask = MaskTextInputFormatter(
+        mask: '#####-###', filter: {"#": RegExp(r'[0-9]')});
+  }
+
+  void updateAddress(ViaCepModel viaCepModel) {
+    final newEstado = estados.firstWhereOrNull(
+      (element) {
+        return element['sigla'] == viaCepModel.state;
+      },
+    );
+
+    setState(() {
+      if (viaCepModel.street?.isNotEmpty ?? false) {
+        _streetController.text = viaCepModel.street!;
+      }
+      if (viaCepModel.city?.isNotEmpty ?? false) {
+        _cityController.text = viaCepModel.city!;
+      }
+      if (viaCepModel.complement?.isNotEmpty ?? false) {
+        _complementController.text = viaCepModel.complement!;
+      }
+      if (viaCepModel.neighborhood?.isNotEmpty ?? false) {
+        _neighborhoodController.text = viaCepModel.neighborhood!;
+      }
+      if (newEstado != null) {
+        estado = newEstado['sigla']!;
+      }
+    });
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('New Address')),
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: MultiBlocListener(
+                listeners: [
+                  BlocListener<ManipulateAddressCubit, ManipulateAddressState>(
+                    bloc: manipulateAddressCubit,
+                    listener: (context, state) {
+                      if (state is ManipulateAddressAddSuccess) {
+                        router.pop(true);
+                        const snackbar =
+                            SnackBar(content: Text('Address added'));
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      }
+                    },
+                  ),
+                  BlocListener<ViaCepCubit, ViaCepState>(
+                    bloc: viaCepCubit,
+                    listener: (context, state) {
+                      if (state is ViaCepSuccess) {
+                        updateAddress(state.viapostalCode);
+                      } else if (state is ViaCepFail) {
+                        final snackbar = SnackBar(content: Text(state.error));
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      }
+                    },
+                  ),
+                ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextFormField(
+                      controller: _postalCodeController,
+                      keyboardType: TextInputType.number,
+                      decoration:
+                          const InputDecoration(labelText: 'postalCode'),
+                      inputFormatters: [postalCodeMask],
+                      onChanged: (value) {
+                        if (value.length == 9) {
+                          final realValue = postalCodeMask.getUnmaskedText();
+                          viaCepCubit.searchpostalCode(realValue);
+                        }
+                      },
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Required field';
+                        }
+
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _streetController,
+                      keyboardType: TextInputType.streetAddress,
+                      decoration: const InputDecoration(labelText: 'street'),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Required field';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _neighborhoodController,
+                      decoration:
+                          const InputDecoration(labelText: 'neighborhood'),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Required field';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _complementController,
+                      decoration:
+                          const InputDecoration(labelText: 'complement'),
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: _cityController,
+                      decoration: const InputDecoration(labelText: 'city'),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Required field';
+                        }
+
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16.0),
+                    DropdownButton<String>(
+                      value: estado,
+                      elevation: 16,
+                      isExpanded: true,
+                      style: const TextStyle(
+                        color: Colors.black,
+                      ),
+                      hint: const Text('Estado'),
+                      underline: Container(
+                        height: 1,
+                        color: const Color(0xff9D98A1),
+                      ),
+                      onChanged: (String? value) {
+                        setState(() {
+                          estado = value!;
+                        });
+                      },
+                      items: estados.map<DropdownMenuItem<String>>(
+                        (Map<String, dynamic> estado) {
+                          return DropdownMenuItem<String>(
+                            value: estado['sigla'],
+                            child: Text(
+                              estado['nome'],
+                              style: const TextStyle(
+                                fontSize: 16.0,
+                              ),
+                            ),
+                          );
+                        },
+                      ).toList(),
+                    ),
+                    const SizedBox(height: 64.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+
+                        final validate = _formKey.currentState!.validate();
+
+                        if (validate) {
+                          final newAddress = AddressModel(
+                            userId: user.id!,
+                            postalCode: _postalCodeController.text.trim(),
+                            rua: _streetController.text.trim(),
+                            complement: _complementController.text.trim(),
+                            neighborhood: _neighborhoodController.text.trim(),
+                            city: _cityController.text.trim(),
+                            estado: estado,
+                          );
+                          manipulateAddressCubit.addAddress(newAddress);
+                        }
+                      },
+                      child: const Text('Add address'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
