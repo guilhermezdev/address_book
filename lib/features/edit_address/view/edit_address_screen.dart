@@ -28,6 +28,7 @@ class EditAddressScreen extends StatefulWidget {
 class _EditAddressScreenState extends State<EditAddressScreen> {
   late final TextEditingController _postalCodeController;
   late final TextEditingController _streetController;
+  late final TextEditingController _numberController;
   late final TextEditingController _cityController;
   late final TextEditingController _complementController;
   late final TextEditingController _neighborhoodController;
@@ -80,7 +81,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
 
     _postalCodeController =
         TextEditingController(text: widget.address.postalCode);
-    _streetController = TextEditingController(text: widget.address.rua);
+    _streetController = TextEditingController(text: widget.address.street);
+    _numberController = TextEditingController(text: widget.address.number);
     _cityController = TextEditingController(text: widget.address.city);
     _complementController =
         TextEditingController(text: widget.address.complement);
@@ -167,9 +169,28 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    DropdownButtonFormField<String>(
+                      value: '🇧🇷 Brazil',
+                      hint: const Text('Country'),
+                      decoration: const InputDecoration(labelText: 'Country'),
+                      onChanged: (String? value) {},
+                      items: const [
+                        DropdownMenuItem<String>(
+                          value: '🇧🇷 Brazil',
+                          child: Text(
+                            '🇧🇷 Brazil',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _postalCodeController,
                       keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.next,
                       decoration:
                           const InputDecoration(labelText: 'postalCode'),
                       inputFormatters: [postalCodeMask],
@@ -188,20 +209,46 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       },
                     ),
                     const SizedBox(height: 16.0),
-                    TextFormField(
-                      controller: _streetController,
-                      keyboardType: TextInputType.streetAddress,
-                      decoration: const InputDecoration(labelText: 'street'),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Required field';
-                        }
-                        return null;
-                      },
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          child: TextFormField(
+                            controller: _streetController,
+                            keyboardType: TextInputType.streetAddress,
+                            textInputAction: TextInputAction.next,
+                            decoration:
+                                const InputDecoration(labelText: 'Street'),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Required field';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 16.0),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _numberController,
+                            keyboardType: TextInputType.streetAddress,
+                            textInputAction: TextInputAction.next,
+                            decoration:
+                                const InputDecoration(labelText: 'Number'),
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Required field';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _neighborhoodController,
+                      textInputAction: TextInputAction.next,
                       decoration:
                           const InputDecoration(labelText: 'neighborhood'),
                       validator: (value) {
@@ -214,6 +261,7 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                     const SizedBox(height: 16.0),
                     TextFormField(
                       controller: _complementController,
+                      textInputAction: TextInputAction.next,
                       decoration:
                           const InputDecoration(labelText: 'complement'),
                     ),
@@ -230,18 +278,10 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                       },
                     ),
                     const SizedBox(height: 16.0),
-                    DropdownButton<String>(
+                    DropdownButtonFormField<String>(
                       value: estado,
-                      elevation: 16,
-                      isExpanded: true,
-                      style: const TextStyle(
-                        color: Colors.black,
-                      ),
-                      hint: const Text('Estado'),
-                      underline: Container(
-                        height: 1,
-                        color: const Color(0xff9D98A1),
-                      ),
+                      hint: const Text('State'),
+                      decoration: const InputDecoration(labelText: 'State'),
                       onChanged: (String? value) {
                         setState(() {
                           estado = value!;
@@ -273,7 +313,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                             id: widget.address.id,
                             userId: user.id!,
                             postalCode: _postalCodeController.text.trim(),
-                            rua: _streetController.text.trim(),
+                            street: _streetController.text.trim(),
+                            number: _numberController.text.trim(),
                             complement: _complementController.text.trim(),
                             neighborhood: _neighborhoodController.text.trim(),
                             city: _cityController.text.trim(),

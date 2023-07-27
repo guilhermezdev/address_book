@@ -16,7 +16,7 @@ class DatabaseProvider {
       'CREATE TABLE user(id INTEGER PRIMARY KEY, name TEXT, email TEXT, password TEXT)',
     );
     db.execute(
-      'CREATE TABLE address(id INTEGER PRIMARY KEY, postalCode TEXT, rua TEXT, complement TEXT, neighborhood TEXT, city TEXT, estado TEXT, userId INTEGER, FOREIGN KEY(userId) REFERENCES user(id))',
+      'CREATE TABLE address(id INTEGER PRIMARY KEY, postalCode TEXT, street TEXT, number TEXT, complement TEXT, neighborhood TEXT, city TEXT, estado TEXT, userId INTEGER, FOREIGN KEY(userId) REFERENCES user(id))',
     );
   }
 

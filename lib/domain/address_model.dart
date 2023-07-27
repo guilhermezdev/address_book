@@ -2,7 +2,8 @@ class AddressModel {
   final int? id;
   final int userId;
   final String postalCode;
-  final String rua;
+  final String street;
+  final String number;
   final String complement;
   final String neighborhood;
   final String city;
@@ -12,7 +13,8 @@ class AddressModel {
     this.id,
     required this.userId,
     required this.postalCode,
-    required this.rua,
+    required this.street,
+    required this.number,
     required this.complement,
     required this.neighborhood,
     required this.city,
@@ -23,7 +25,8 @@ class AddressModel {
         id: json['id'],
         userId: json['userId'],
         postalCode: json['postalCode'],
-        rua: json['rua'],
+        street: json['street'],
+        number: json['number'],
         complement: json['complement'],
         neighborhood: json['neighborhood'],
         city: json['city'],
@@ -34,7 +37,7 @@ class AddressModel {
         if (id != null) 'id': id,
         'userId': userId,
         'postalCode': postalCode,
-        'rua': rua,
+        'street': street,
         'complement': complement,
         'neighborhood': neighborhood,
         'city': city,

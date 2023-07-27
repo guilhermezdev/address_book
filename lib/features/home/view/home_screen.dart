@@ -188,7 +188,7 @@ class AddressCard extends StatelessWidget {
             horizontal: 12.0,
             vertical: 8.0,
           ),
-          title: Text(address.rua),
+          title: Text(address.street),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
