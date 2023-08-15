@@ -22,12 +22,16 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   google_fonts: ^5.1.0
   flutter_native_splash: ^2.3.1
+  get_it: ^7.6.0
+  injectable: ^2.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
   flutter_launcher_icons: ^0.13.1
+  injectable_generator: ^2.3.0
+  build_runner: ^2.4.6
   
 
 flutter:

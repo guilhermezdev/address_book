@@ -1,11 +1,15 @@
-import 'package:address_book/data/viacep.dart';
+import 'package:address_book/common/data/viacep.dart';
 import 'package:address_book/features/home/view/blocs/viacep/viacep_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class ViaCepCubit extends Cubit<ViaCepState> {
-  ViaCepCubit() : super(ViaCepIdle());
+  ViaCepCubit({
+    required this.repository,
+  }) : super(ViaCepIdle());
 
-  final ViaCepRepository repository = ViaCepRepository();
+  final ViaCepRepository repository;
 
   Future<void> searchpostalCode(String postalCode) async {
     emit(ViaCepLoading());

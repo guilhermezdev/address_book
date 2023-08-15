@@ -1,4 +1,4 @@
-import 'package:address_book/domain/address_model.dart';
+import 'package:address_book/common/domain/address_model.dart';
 import 'package:address_book/features/edit_address/view/edit_address_screen.dart';
 import 'package:address_book/features/home/view/home_screen.dart';
 import 'package:address_book/features/login/view/login_screen.dart';

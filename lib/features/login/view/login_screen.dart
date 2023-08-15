@@ -1,4 +1,5 @@
-import 'package:address_book/common/loading_widget.dart';
+import 'package:address_book/common/view/loading_widget.dart';
+import 'package:address_book/di.dart';
 import 'package:address_book/features/auth/view/auth/auth_cubit.dart';
 import 'package:address_book/features/auth/view/auth/auth_state.dart';
 import 'package:address_book/features/auth/view/login/login_cubit.dart';
@@ -60,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: MultiBlocListener(
               listeners: [
                 BlocListener<AuthCubit, AuthState>(
+                  bloc: getIt<AuthCubit>(),
                   listener: (context, state) {
                     if (state is Authenticated) {
                       router.pushReplacement('/home');
@@ -70,8 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   bloc: loginCubit,
                   listener: (context, state) {
                     if (state is LoginSuccess) {
-                      BlocProvider.of<AuthCubit>(context)
-                          .persistUser(state.user);
+                      getIt<AuthCubit>().persistUser(state.user);
                     } else if (state is LoginFailed) {
                       final snackbar = SnackBar(content: Text(state.error));
                       ScaffoldMessenger.of(context).showSnackBar(snackbar);

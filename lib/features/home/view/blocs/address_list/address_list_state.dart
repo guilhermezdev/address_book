@@ -1,4 +1,4 @@
-import 'package:address_book/domain/address_model.dart';
+import 'package:address_book/common/domain/address_model.dart';
 
 abstract class AddressListState {}
 

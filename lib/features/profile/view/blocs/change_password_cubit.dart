@@ -1,5 +1,5 @@
-import 'package:address_book/data/database.dart';
-import 'package:address_book/domain/user_model.dart';
+import 'package:address_book/common/data/database.dart';
+import 'package:address_book/common/domain/user_model.dart';
 import 'package:address_book/features/profile/view/blocs/change_password_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

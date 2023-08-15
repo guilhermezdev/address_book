@@ -1,3 +1,4 @@
+import 'package:address_book/di.dart';
 import 'package:address_book/features/auth/view/auth/auth_cubit.dart';
 import 'package:address_book/features/auth/view/auth/auth_state.dart';
 import 'package:address_book/router.dart';
@@ -17,13 +18,14 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    BlocProvider.of<AuthCubit>(context).reauth();
+    getIt<AuthCubit>().reauth();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocListener<AuthCubit, AuthState>(
+        bloc: getIt<AuthCubit>(),
         listener: (context, state) {
           if (state is Authenticated) {
             router.pushReplacement('/home');

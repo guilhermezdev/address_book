@@ -1,8 +1,10 @@
 import 'dart:convert';
 
-import 'package:address_book/domain/viacep_model.dart';
+import 'package:address_book/common/domain/viacep_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:injectable/injectable.dart';
 
+@injectable
 class ViaCepRepository {
   Future<ViaCepModel?> searchViaCep(String postalCode) async {
     try {

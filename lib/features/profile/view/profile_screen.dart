@@ -1,4 +1,5 @@
-import 'package:address_book/domain/user_model.dart';
+import 'package:address_book/common/domain/user_model.dart';
+import 'package:address_book/di.dart';
 import 'package:address_book/features/auth/view/auth/auth_cubit.dart';
 import 'package:address_book/features/auth/view/auth/auth_state.dart';
 import 'package:address_book/features/profile/view/blocs/change_password_cubit.dart';
@@ -32,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    user = (context.read<AuthCubit>().state as Authenticated).user;
+    user = (getIt<AuthCubit>().state as Authenticated).user;
 
     _nomeController = TextEditingController(text: user.name);
     _emailController = TextEditingController(text: user.email);
@@ -67,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         bloc: changePasswordCubit,
         listener: (context, state) {
           if (state is ChangePasswordSuccess) {
-            context.read<AuthCubit>().updateUser(state.user);
+            getIt<AuthCubit>().updateUser(state.user);
             router.pop();
             const snackbar = SnackBar(
               content: Text('Password updated!'),
@@ -82,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             actions: [
               IconButton(
                 onPressed: () {
-                  context.read<AuthCubit>().logout();
+                  getIt<AuthCubit>().logout();
                 },
                 icon: const Icon(Icons.logout_outlined),
               )

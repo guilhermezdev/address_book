@@ -1,5 +1,6 @@
-import 'package:address_book/common/loading_widget.dart';
-import 'package:address_book/domain/user_model.dart';
+import 'package:address_book/common/domain/user_model.dart';
+import 'package:address_book/common/view/loading_widget.dart';
+import 'package:address_book/di.dart';
 import 'package:address_book/features/auth/view/auth/auth_cubit.dart';
 import 'package:address_book/features/auth/view/auth/auth_state.dart';
 import 'package:address_book/features/auth/view/sign_up/sign_up_cubit.dart';
@@ -73,6 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           FocusManager.instance.primaryFocus?.unfocus();
         },
         child: BlocListener<AuthCubit, AuthState>(
+          bloc: getIt<AuthCubit>(),
           listener: (context, state) {
             if (state is Authenticated) {
               router.pushReplacement('/home');
@@ -82,7 +84,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             bloc: signUpCubit,
             listener: (context, state) {
               if (state is SignUpSuccess) {
-                BlocProvider.of<AuthCubit>(context).persistUser(state.user);
+                getIt<AuthCubit>().persistUser(state.user);
               }
 
               if (state is SignUpFailed) {

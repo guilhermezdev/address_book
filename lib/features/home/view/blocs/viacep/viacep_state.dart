@@ -1,4 +1,4 @@
-import 'package:address_book/domain/viacep_model.dart';
+import 'package:address_book/common/domain/viacep_model.dart';
 
 abstract class ViaCepState {}
 

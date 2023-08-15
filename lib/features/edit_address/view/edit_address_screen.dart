@@ -1,12 +1,14 @@
-import 'package:address_book/domain/address_model.dart';
-import 'package:address_book/domain/user_model.dart';
-import 'package:address_book/domain/viacep_model.dart';
+import 'package:address_book/common/domain/address_model.dart';
+import 'package:address_book/common/domain/user_model.dart';
+import 'package:address_book/common/domain/viacep_model.dart';
+import 'package:address_book/di.dart';
 import 'package:address_book/features/auth/view/auth/auth_cubit.dart';
 import 'package:address_book/features/auth/view/auth/auth_state.dart';
 import 'package:address_book/features/home/view/blocs/manipulate_address/manipulate_address_cubit.dart';
 import 'package:address_book/features/home/view/blocs/manipulate_address/manipulate_address_state.dart';
 import 'package:address_book/features/home/view/blocs/viacep/viacep_cubit.dart';
 import 'package:address_book/features/home/view/blocs/viacep/viacep_state.dart';
+import 'package:address_book/resources/brazilian_states.dart';
 import 'package:address_book/router.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -45,36 +47,6 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
 
   late final MaskTextInputFormatter postalCodeMask;
 
-  final estados = [
-    {"nome": "Acre", "sigla": "AC"},
-    {"nome": "Alagoas", "sigla": "AL"},
-    {"nome": "Amapá", "sigla": "AP"},
-    {"nome": "Amazonas", "sigla": "AM"},
-    {"nome": "Bahia", "sigla": "BA"},
-    {"nome": "Ceará", "sigla": "CE"},
-    {"nome": "Distrito Federal", "sigla": "DF"},
-    {"nome": "Espírito Santo", "sigla": "ES"},
-    {"nome": "Goiás", "sigla": "GO"},
-    {"nome": "Maranhão", "sigla": "MA"},
-    {"nome": "Mato Grosso", "sigla": "MT"},
-    {"nome": "Mato Grosso do Sul", "sigla": "MS"},
-    {"nome": "Minas Gerais", "sigla": "MG"},
-    {"nome": "Pará", "sigla": "PA"},
-    {"nome": "Paraíba", "sigla": "PB"},
-    {"nome": "Paraná", "sigla": "PR"},
-    {"nome": "Pernambuco", "sigla": "PE"},
-    {"nome": "Piauí", "sigla": "PI"},
-    {"nome": "Rio de Janeiro", "sigla": "RJ"},
-    {"nome": "Rio Grande do Norte", "sigla": "RN"},
-    {"nome": "Rio Grande do Sul", "sigla": "RS"},
-    {"nome": "Rondônia", "sigla": "RO"},
-    {"nome": "Roraima", "sigla": "RR"},
-    {"nome": "Santa Catarina", "sigla": "SC"},
-    {"nome": "São Paulo", "sigla": "SP"},
-    {"nome": "Sergipe", "sigla": "SE"},
-    {"nome": "Tocantins", "sigla": "TO"}
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -91,18 +63,20 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
 
     estado = widget.address.estado;
 
-    user = (context.read<AuthCubit>().state as Authenticated).user;
+    user = (getIt<AuthCubit>().state as Authenticated).user;
 
-    manipulateAddressCubit = ManipulateAddressCubit();
+    manipulateAddressCubit = getIt<ManipulateAddressCubit>();
 
-    viaCepCubit = ViaCepCubit();
+    viaCepCubit = getIt<ViaCepCubit>();
 
     postalCodeMask = MaskTextInputFormatter(
-        mask: '#####-###', filter: {"#": RegExp(r'[0-9]')});
+      mask: '#####-###',
+      filter: {"#": RegExp(r'[0-9]')},
+    );
   }
 
   void updateAddress(ViaCepModel viaCepModel) {
-    final newEstado = estados.firstWhereOrNull(
+    final newEstado = BrazilianStates.estados.firstWhereOrNull(
       (element) {
         return element['sigla'] == viaCepModel.state;
       },
@@ -287,7 +261,8 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
                           estado = value!;
                         });
                       },
-                      items: estados.map<DropdownMenuItem<String>>(
+                      items:
+                          BrazilianStates.estados.map<DropdownMenuItem<String>>(
                         (Map<String, dynamic> estado) {
                           return DropdownMenuItem<String>(
                             value: estado['sigla'],

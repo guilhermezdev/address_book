@@ -1,4 +1,4 @@
-import 'package:address_book/domain/user_model.dart';
+import 'package:address_book/common/domain/user_model.dart';
 
 abstract class LoginState {}
 

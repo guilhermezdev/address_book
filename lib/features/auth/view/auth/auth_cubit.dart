@@ -1,9 +1,11 @@
-import 'package:address_book/data/database.dart';
-import 'package:address_book/domain/user_model.dart';
+import 'package:address_book/common/data/database.dart';
+import 'package:address_book/common/domain/user_model.dart';
 import 'package:address_book/features/auth/view/auth/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+@singleton
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(Unauthenticated());
 

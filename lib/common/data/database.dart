@@ -1,8 +1,10 @@
-import 'package:address_book/domain/address_model.dart';
-import 'package:address_book/domain/user_model.dart';
+import 'package:address_book/common/domain/address_model.dart';
+import 'package:address_book/common/domain/user_model.dart';
+import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
+@singleton
 class DatabaseProvider {
   Future<Database> get database async => openDatabase(
         join(await getDatabasesPath(), 'address_book.db'),

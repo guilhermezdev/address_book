@@ -1,6 +1,7 @@
-import 'package:address_book/common/loading_widget.dart';
-import 'package:address_book/domain/address_model.dart';
-import 'package:address_book/domain/user_model.dart';
+import 'package:address_book/common/domain/address_model.dart';
+import 'package:address_book/common/domain/user_model.dart';
+import 'package:address_book/common/view/loading_widget.dart';
+import 'package:address_book/di.dart';
 import 'package:address_book/features/auth/view/auth/auth_cubit.dart';
 import 'package:address_book/features/auth/view/auth/auth_state.dart';
 import 'package:address_book/features/home/view/blocs/address_list/address_list_cubit.dart';
@@ -28,11 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    user = (context.read<AuthCubit>().state as Authenticated).user;
-    addressListCubit = AddressListCubit();
+    user = (getIt<AuthCubit>().state as Authenticated).user;
+    addressListCubit = getIt<AddressListCubit>();
     addressListCubit.loadAddressList(user.id!);
 
-    manipulateAddressCubit = ManipulateAddressCubit();
+    manipulateAddressCubit = getIt<ManipulateAddressCubit>();
   }
 
   void onTap(AddressModel address) {
@@ -89,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: BlocListener<AuthCubit, AuthState>(
+          bloc: getIt<AuthCubit>(),
           listener: (context, state) {
             if (state is Unauthenticated) {
               router.pushReplacement('/login');

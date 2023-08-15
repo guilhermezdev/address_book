@@ -38,6 +38,7 @@ class AddressModel {
         'userId': userId,
         'postalCode': postalCode,
         'street': street,
+        'number': number,
         'complement': complement,
         'neighborhood': neighborhood,
         'city': city,
